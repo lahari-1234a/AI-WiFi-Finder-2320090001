@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: wifi
+    description: Nearby WiFi discovery and community test results
 paths:
   /healthz:
     get:
@@ -24,6 +26,139 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /wifi/places:
+    get:
+      operationId: findWifiPlaces
+      tags: [wifi]
+      summary: Find nearby work-friendly places
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          schema:
+            type: number
+            minimum: -90
+            maximum: 90
+        - name: longitude
+          in: query
+          required: true
+          schema:
+            type: number
+            minimum: -180
+            maximum: 180
+        - name: radiusMeters
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 250
+            maximum: 5000
+        - name: category
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [all, cafe, library, coworking, hotel]
+        - name: activity
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [remote-work, video-calls, online-class, software-development]
+      responses:
+        "200":
+          description: Nearby venues enriched with community WiFi measurements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WifiPlace"
+        "502":
+          description: Nearby venue data is temporarily unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /wifi/summary:
+    get:
+      operationId: getWifiSummary
+      tags: [wifi]
+      summary: Summarize nearby venues and community measurements
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          schema:
+            type: number
+            minimum: -90
+            maximum: 90
+        - name: longitude
+          in: query
+          required: true
+          schema:
+            type: number
+            minimum: -180
+            maximum: 180
+        - name: radiusMeters
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 250
+            maximum: 5000
+      responses:
+        "200":
+          description: Nearby venue and report statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WifiSummary"
+  /wifi/reports:
+    get:
+      operationId: getWifiReports
+      tags: [wifi]
+      summary: Get recent community measurements for a venue
+      parameters:
+        - name: placeId
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+      responses:
+        "200":
+          description: Most recent reports for the selected venue
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WifiReport"
+    post:
+      operationId: createWifiReport
+      tags: [wifi]
+      summary: Submit a speed test taken while connected to a venue's WiFi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WifiReportInput"
+      responses:
+        "201":
+          description: Community measurement saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WifiReport"
+        "400":
+          description: Invalid measurement or venue WiFi confirmation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +168,165 @@ components:
           type: string
       required:
         - status
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+    WifiPlace:
+      type: object
+      properties:
+        placeId:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+          enum: [cafe, library, coworking, hotel, other]
+        latitude:
+          type: number
+        longitude:
+          type: number
+        address:
+          type: ["string", "null"]
+        distanceMeters:
+          type: number
+        wifiAvailable:
+          type: ["boolean", "null"]
+        communityTestCount:
+          type: integer
+        lastTestAt:
+          type: ["string", "null"]
+          format: date-time
+        avgDownloadMbps:
+          type: ["number", "null"]
+        avgUploadMbps:
+          type: ["number", "null"]
+        avgLatencyMs:
+          type: ["number", "null"]
+        remoteWorkerScore:
+          type: ["integer", "null"]
+        mapUrl:
+          type: string
+      required:
+        - placeId
+        - name
+        - category
+        - latitude
+        - longitude
+        - address
+        - distanceMeters
+        - wifiAvailable
+        - communityTestCount
+        - lastTestAt
+        - avgDownloadMbps
+        - avgUploadMbps
+        - avgLatencyMs
+        - remoteWorkerScore
+        - mapUrl
+    WifiSummary:
+      type: object
+      properties:
+        venueCount:
+          type: integer
+        testedVenueCount:
+          type: integer
+        communityTestCount:
+          type: integer
+        averageDownloadMbps:
+          type: ["number", "null"]
+        averageLatencyMs:
+          type: ["number", "null"]
+      required:
+        - venueCount
+        - testedVenueCount
+        - communityTestCount
+        - averageDownloadMbps
+        - averageLatencyMs
+    WifiReport:
+      type: object
+      properties:
+        id:
+          type: string
+        placeId:
+          type: string
+        placeName:
+          type: string
+        downloadMbps:
+          type: number
+        uploadMbps:
+          type: number
+        latencyMs:
+          type: number
+        signalStrength:
+          type: ["integer", "null"]
+        activity:
+          type: string
+          enum: [remote-work, video-calls, online-class, software-development]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - placeId
+        - placeName
+        - downloadMbps
+        - uploadMbps
+        - latencyMs
+        - signalStrength
+        - activity
+        - createdAt
+    WifiReportInput:
+      type: object
+      properties:
+        placeId:
+          type: string
+          minLength: 1
+          maxLength: 100
+        placeName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        downloadMbps:
+          type: number
+          minimum: 0
+          maximum: 10000
+        uploadMbps:
+          type: number
+          minimum: 0
+          maximum: 10000
+        latencyMs:
+          type: number
+          minimum: 0
+          maximum: 60000
+        signalStrength:
+          type: ["integer", "null"]
+          minimum: 0
+          maximum: 100
+        activity:
+          type: string
+          enum: [remote-work, video-calls, online-class, software-development]
+        connectedToVenueWifi:
+          type: boolean
+          enum: [true]
+      required:
+        - placeId
+        - placeName
+        - latitude
+        - longitude
+        - downloadMbps
+        - uploadMbps
+        - latencyMs
+        - signalStrength
+        - activity
+        - connectedToVenueWifi
 

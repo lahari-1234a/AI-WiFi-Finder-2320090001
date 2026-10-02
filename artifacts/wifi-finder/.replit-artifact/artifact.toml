@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "AI WiFi Finder"
+description = "A location-aware app for digital nomads, students, and remote workers to discover nearby places, compare community WiFi reliability and recent speed measurements, run a live connection test, and recommend suitable spots for video calls, classes, and focused work."
+version = "1.0.0"
+id = "artifacts/wifi-finder"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20225
+
+[services.development]
+run = "pnpm --filter @workspace/wifi-finder run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/wifi-finder", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/wifi-finder/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20225"
+BASE_PATH = "/"

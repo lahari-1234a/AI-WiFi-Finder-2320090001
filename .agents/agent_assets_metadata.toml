@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "wjw7Dh08P6zqBsAADkVxO"
+uri = "file://downloads/ai-wifi-finder-source.zip"
+type = "unspecified"
+title = "AI WiFi Finder source ZIP"
+description = "Full workspace source and project configuration, excluding dependency folders and secrets."
+logical_id = "6f79b86a-72ec-41ee-89ad-096ca8c1de79"
+content_hash = "sha256:80ffd0ad0fea947b1bef31767851b12f369152b3247622d060e238e19cd199bf"
+size = 259978
+mtime_ms = 1790924327987
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:3f88b70d-99f2-477d-bddc-78f9320970bd/6f79b86a-72ec-41ee-89ad-096ca8c1de79/2e272df8-dbe4-47d1-95f7-f370d2e3e9a6"
+storage_version_token = "1790924336518123"
+content_type = "application/octet-stream"

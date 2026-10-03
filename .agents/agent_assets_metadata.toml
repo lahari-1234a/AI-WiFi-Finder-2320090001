@@ -28,3 +28,17 @@ mtime_ms = 1790956343173
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:3f88b70d-99f2-477d-bddc-78f9320970bd/cf0e3d07-0cff-4b81-9719-ac77043ac29c/b7968b46-b099-4399-b1de-7f524d27499c"
 storage_version_token = "1790956375904482"
 content_type = "text/markdown"
+
+[[outputs]]
+id = "g51e9_G0yH6Fy3LMv-tkM"
+uri = "file://research/notes.md"
+type = "text"
+title = "Research Notes: WiFi Finder Literature Review"
+description = "Scope, focus areas, and coverage checklist for the requested 15-paper review."
+logical_id = "98ee8486-5998-47eb-b771-07745e5ae752"
+content_hash = "sha256:f0219ef58047f67f31991122700914cb50f7641b693ec3b0614ad58c9a6cf1c9"
+size = 1996
+mtime_ms = 1791003640693
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:3f88b70d-99f2-477d-bddc-78f9320970bd/98ee8486-5998-47eb-b771-07745e5ae752/b32bfa70-98dc-44bb-ade5-19f494be46e0"
+storage_version_token = "1791003649914157"
+content_type = "text/markdown"
